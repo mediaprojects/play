@@ -366,7 +366,7 @@ public class DBConfig {
         if ((p.getProperty(propsPrefix+".driver") == null) || (p.getProperty(propsPrefix+".url") == null)) {
             return false;
         }
-        if (datasource == null) {
+        if (datasource == null || !(datasource instanceof ComboPooledDataSource)) {
             return true;
         } else {
             ComboPooledDataSource ds = (ComboPooledDataSource) datasource;

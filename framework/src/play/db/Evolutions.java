@@ -1,6 +1,5 @@
 package play.db;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import play.Play;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import javax.sql.DataSource;
 
 /**
  * Handles migration of data.
@@ -39,15 +39,15 @@ public class Evolutions extends PlayPlugin {
 	 */
 	private boolean disabled = false;
 	
-    protected static ComboPooledDataSource getDatasource() {
+    protected static DataSource getDatasource() {
         DBConfig dbConfig = DB.getDBConfig(DBConfig.defaultDbConfigName, true);
         if (dbConfig==null) {
             return null;
         }
-        return (ComboPooledDataSource)dbConfig.getDatasource();
+        return dbConfig.getDatasource();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         /** Check that evolutions are enabled **/
         if (!evolutionsDirectory.exists()) {
@@ -69,8 +69,8 @@ public class Evolutions extends PlayPlugin {
         new DBPlugin().onApplicationStart();
 
         /** Connected **/
-        System.out.println("~ Connected to " + getDatasource().getJdbcUrl());
-
+        System.out.println("~ Connected to " + getDatasource().getConnection().getMetaData().getURL());
+        
         /** Sumary **/
         Evolution database = listDatabaseEvolutions().peek();
         Evolution application = listApplicationEvolutions().peek();
